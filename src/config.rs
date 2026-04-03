@@ -10,6 +10,7 @@ pub struct Config {
     pub anthropic: Option<ProviderConfig>,
     pub openai: Option<ProviderConfig>,
     pub google: Option<ProviderConfig>,
+    pub mistral: Option<ProviderConfig>,
     pub ollama: Option<ProviderConfig>,
     pub openrouter: Option<ProviderConfig>,
     pub xai: Option<ProviderConfig>,
@@ -40,7 +41,7 @@ fn config_path() -> PathBuf {
 }
 
 const DEFAULT_CONFIG: &str = r#"[commandok]
-provider = "anthropic"  # Options: anthropic, openai, google, ollama, openrouter, xai
+provider = "anthropic"  # Options: anthropic, openai, google, mistral, ollama, openrouter, xai
 system_prompt = "You are a terminal command generator. Given a natural language description, output ONLY the shell command appropriate for the user's OS and shell. No explanation, no markdown, no code blocks, no backticks. Just the raw command."
 
 [anthropic]
@@ -54,6 +55,11 @@ model = "gpt-5.4"
 [google]
 api_key = ""
 model = "gemini-3-flash-preview"
+
+[mistral]
+api_key = ""
+model = "mistral-small-latest"
+# api_url = "https://api.mistral.ai/v1"  # default
 
 [ollama]
 model = "gemma3:1b"
@@ -94,6 +100,7 @@ const PROVIDER_ORDER: &[&str] = &[
     "anthropic",
     "openai",
     "google",
+    "mistral",
     "ollama",
     "openrouter",
     "xai",
@@ -105,6 +112,7 @@ impl Config {
             "anthropic" => self.anthropic.as_ref(),
             "openai" => self.openai.as_ref(),
             "google" => self.google.as_ref(),
+            "mistral" => self.mistral.as_ref(),
             "ollama" => self.ollama.as_ref(),
             "openrouter" => self.openrouter.as_ref(),
             "xai" => self.xai.as_ref(),

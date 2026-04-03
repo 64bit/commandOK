@@ -1,5 +1,6 @@
 pub mod claude;
 pub mod gemini;
+pub mod mistral;
 pub mod ollama;
 pub mod openai;
 pub mod openrouter;
@@ -19,6 +20,7 @@ pub enum Provider {
     Anthropic(ProviderConfig),
     OpenAi(ProviderConfig),
     Google(ProviderConfig),
+    Mistral(ProviderConfig),
     Ollama(ProviderConfig),
     OpenRouter(ProviderConfig),
     Xai(ProviderConfig),
@@ -30,6 +32,7 @@ impl Provider {
             "anthropic" => Provider::Anthropic(cfg.clone()),
             "openai" => Provider::OpenAi(cfg.clone()),
             "google" => Provider::Google(cfg.clone()),
+            "mistral" => Provider::Mistral(cfg.clone()),
             "ollama" => Provider::Ollama(cfg.clone()),
             "openrouter" => Provider::OpenRouter(cfg.clone()),
             "xai" => Provider::Xai(cfg.clone()),
@@ -47,6 +50,7 @@ impl Provider {
             Provider::Anthropic(cfg) => claude::stream(cfg, query, system_prompt, tx).await,
             Provider::OpenAi(cfg) => openai::stream(cfg, query, system_prompt, tx).await,
             Provider::Google(cfg) => gemini::stream(cfg, query, system_prompt, tx).await,
+            Provider::Mistral(cfg) => mistral::stream(cfg, query, system_prompt, tx).await,
             Provider::Ollama(cfg) => ollama::stream(cfg, query, system_prompt, tx).await,
             Provider::OpenRouter(cfg) => openrouter::stream(cfg, query, system_prompt, tx).await,
             Provider::Xai(cfg) => xai::stream(cfg, query, system_prompt, tx).await,
