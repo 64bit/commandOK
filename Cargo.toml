@@ -1,0 +1,15 @@
+[package]
+name = "commandok"
+version = "0.1.0"
+edition = "2021"
+description = "Spotlight-like command generator for your terminal, powered by LLMs"
+
+[dependencies]
+ratatui = "0.29"
+crossterm = "0.28"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.8"
+libc = "0.2"
