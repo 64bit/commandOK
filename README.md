@@ -1,4 +1,4 @@
-# commandok
+# commandOK
 
 Spotlight-like command generator for your terminal. Pops up when you need it and gets out of the way when you don't.
 
