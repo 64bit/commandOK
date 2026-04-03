@@ -1,6 +1,6 @@
-# commandOK
+# ⌘OK
 
-Spotlight-like command generator for your terminal. Pops up when you need it and gets out of the way when you don't.
+**commandOK** is a Spotlight-like command generator for your terminal. Pops up when you need it and gets out of the way when you don't.
 
 Describe what you want in plain English, get the shell command back instantly.
 
