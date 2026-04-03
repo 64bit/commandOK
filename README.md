@@ -51,6 +51,11 @@ model = "gemini-3-flash-preview"
 [ollama]
 model = "gemma3:1b"
 # api_url = "http://localhost:11434"  # default, change if running elsewhere
+
+[openrouter]
+api_key = ""
+model = "qwen/qwen3.6-plus:free"
+# api_url = "https://openrouter.ai/api/v1"  # default
 ```
 
 ## Usage
