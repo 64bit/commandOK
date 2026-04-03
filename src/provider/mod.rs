@@ -3,6 +3,7 @@ pub mod gemini;
 pub mod ollama;
 pub mod openai;
 pub mod openrouter;
+pub mod xai;
 
 use crate::config::ProviderConfig;
 use tokio::sync::mpsc;
@@ -20,6 +21,7 @@ pub enum Provider {
     Google(ProviderConfig),
     Ollama(ProviderConfig),
     OpenRouter(ProviderConfig),
+    Xai(ProviderConfig),
 }
 
 impl Provider {
@@ -30,6 +32,7 @@ impl Provider {
             "google" => Provider::Google(cfg.clone()),
             "ollama" => Provider::Ollama(cfg.clone()),
             "openrouter" => Provider::OpenRouter(cfg.clone()),
+            "xai" => Provider::Xai(cfg.clone()),
             _ => unreachable!("validated in config"),
         }
     }
@@ -46,6 +49,7 @@ impl Provider {
             Provider::Google(cfg) => gemini::stream(cfg, query, system_prompt, tx).await,
             Provider::Ollama(cfg) => ollama::stream(cfg, query, system_prompt, tx).await,
             Provider::OpenRouter(cfg) => openrouter::stream(cfg, query, system_prompt, tx).await,
+            Provider::Xai(cfg) => xai::stream(cfg, query, system_prompt, tx).await,
         }
     }
 }

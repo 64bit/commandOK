@@ -12,6 +12,7 @@ pub struct Config {
     pub google: Option<ProviderConfig>,
     pub ollama: Option<ProviderConfig>,
     pub openrouter: Option<ProviderConfig>,
+    pub xai: Option<ProviderConfig>,
 }
 
 #[derive(Deserialize)]
@@ -39,7 +40,7 @@ fn config_path() -> PathBuf {
 }
 
 const DEFAULT_CONFIG: &str = r#"[commandok]
-provider = "anthropic"  # Options: anthropic, openai, google, ollama, openrouter
+provider = "anthropic"  # Options: anthropic, openai, google, ollama, openrouter, xai
 system_prompt = "You are a terminal command generator. Given a natural language description, output ONLY the shell command appropriate for the user's OS and shell. No explanation, no markdown, no code blocks, no backticks. Just the raw command."
 
 [anthropic]
@@ -62,6 +63,11 @@ model = "gemma3:1b"
 api_key = ""
 model = "qwen/qwen3.6-plus:free"
 # api_url = "https://openrouter.ai/api/v1"  # default
+
+[xai]
+api_key = ""
+model = "grok-4.20-0309-reasoning"
+# api_url = "https://api.x.ai/v1"  # default
 "#;
 
 pub fn load() -> Result<Config, String> {
@@ -84,7 +90,14 @@ pub fn load() -> Result<Config, String> {
     Ok(config)
 }
 
-const PROVIDER_ORDER: &[&str] = &["anthropic", "openai", "google", "ollama", "openrouter"];
+const PROVIDER_ORDER: &[&str] = &[
+    "anthropic",
+    "openai",
+    "google",
+    "ollama",
+    "openrouter",
+    "xai",
+];
 
 impl Config {
     fn get_provider(&self, name: &str) -> Option<&ProviderConfig> {
@@ -94,6 +107,7 @@ impl Config {
             "google" => self.google.as_ref(),
             "ollama" => self.ollama.as_ref(),
             "openrouter" => self.openrouter.as_ref(),
+            "xai" => self.xai.as_ref(),
             _ => None,
         }
     }

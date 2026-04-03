@@ -33,7 +33,7 @@ On first run, a default config is created at `~/.commandok/config.toml`. Add you
 
 ```toml
 [commandok]
-provider = "anthropic"  # Options: anthropic, openai, google, ollama
+provider = "anthropic"  # Options: anthropic, openai, google, ollama, openrouter, xai
 system_prompt = "You are a terminal command generator. Given a natural language description, output ONLY the shell command appropriate for the user's OS and shell. No explanation, no markdown, no code blocks, no backticks. Just the raw command."
 
 [anthropic]
@@ -56,6 +56,11 @@ model = "gemma3:1b"
 api_key = ""
 model = "qwen/qwen3.6-plus:free"
 # api_url = "https://openrouter.ai/api/v1"  # default
+
+[xai]
+api_key = ""
+model = "grok-4.20-0309-reasoning"
+# api_url = "https://api.x.ai/v1"  # default
 ```
 
 ## Usage
