@@ -33,7 +33,7 @@ On first run, a default config is created at `~/.commandok/config.toml`. Add you
 
 ```toml
 [commandok]
-provider = "anthropic"  # Options: anthropic, openai, google
+provider = "anthropic"  # Options: anthropic, openai, google, ollama
 system_prompt = "You are a terminal command generator. Given a natural language description, output ONLY the shell command appropriate for the user's OS and shell. No explanation, no markdown, no code blocks, no backticks. Just the raw command."
 
 [anthropic]
@@ -47,6 +47,10 @@ model = "gpt-5.4"
 [google]
 api_key = "..."
 model = "gemini-3-flash-preview"
+
+[ollama]
+model = "gemma3:1b"
+# api_url = "http://localhost:11434"  # default, change if running elsewhere
 ```
 
 ## Usage

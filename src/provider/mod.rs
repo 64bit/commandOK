@@ -1,5 +1,6 @@
 pub mod claude;
 pub mod gemini;
+pub mod ollama;
 pub mod openai;
 
 use crate::config::ProviderConfig;
@@ -16,6 +17,7 @@ pub enum Provider {
     Anthropic(ProviderConfig),
     OpenAi(ProviderConfig),
     Google(ProviderConfig),
+    Ollama(ProviderConfig),
 }
 
 impl Provider {
@@ -24,6 +26,7 @@ impl Provider {
             "anthropic" => Provider::Anthropic(cfg.clone()),
             "openai" => Provider::OpenAi(cfg.clone()),
             "google" => Provider::Google(cfg.clone()),
+            "ollama" => Provider::Ollama(cfg.clone()),
             _ => unreachable!("validated in config"),
         }
     }
@@ -38,6 +41,7 @@ impl Provider {
             Provider::Anthropic(cfg) => claude::stream(cfg, query, system_prompt, tx).await,
             Provider::OpenAi(cfg) => openai::stream(cfg, query, system_prompt, tx).await,
             Provider::Google(cfg) => gemini::stream(cfg, query, system_prompt, tx).await,
+            Provider::Ollama(cfg) => ollama::stream(cfg, query, system_prompt, tx).await,
         }
     }
 }

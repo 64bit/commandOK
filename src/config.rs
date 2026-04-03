@@ -10,6 +10,7 @@ pub struct Config {
     pub anthropic: Option<ProviderConfig>,
     pub openai: Option<ProviderConfig>,
     pub google: Option<ProviderConfig>,
+    pub ollama: Option<ProviderConfig>,
 }
 
 #[derive(Deserialize)]
@@ -20,8 +21,11 @@ pub struct CommandokConfig {
 
 #[derive(Deserialize, Clone)]
 pub struct ProviderConfig {
+    #[serde(default)]
     pub api_key: String,
     pub model: String,
+    #[serde(default)]
+    pub api_url: String,
 }
 
 fn config_dir() -> PathBuf {
@@ -34,7 +38,7 @@ fn config_path() -> PathBuf {
 }
 
 const DEFAULT_CONFIG: &str = r#"[commandok]
-provider = "anthropic"  # Options: anthropic, openai, google
+provider = "anthropic"  # Options: anthropic, openai, google, ollama
 system_prompt = "You are a terminal command generator. Given a natural language description, output ONLY the shell command appropriate for the user's OS and shell. No explanation, no markdown, no code blocks, no backticks. Just the raw command."
 
 [anthropic]
@@ -48,6 +52,10 @@ model = "gpt-5.4"
 [google]
 api_key = ""
 model = "gemini-3-flash-preview"
+
+[ollama]
+model = "gemma3:1b"
+# api_url = "http://localhost:11434"  # default, change if running elsewhere
 "#;
 
 pub fn load() -> Result<Config, String> {
@@ -55,15 +63,14 @@ pub fn load() -> Result<Config, String> {
 
     if !path.exists() {
         let dir = config_dir();
-        fs::create_dir_all(&dir)
-            .map_err(|e| format!("Failed to create {}: {e}", dir.display()))?;
+        fs::create_dir_all(&dir).map_err(|e| format!("Failed to create {}: {e}", dir.display()))?;
         fs::File::create(&path)
             .and_then(|mut f| f.write_all(DEFAULT_CONFIG.as_bytes()))
             .map_err(|e| format!("Failed to write {}: {e}", path.display()))?;
     }
 
-    let content = fs::read_to_string(&path)
-        .map_err(|e| format!("Failed to read {}: {e}", path.display()))?;
+    let content =
+        fs::read_to_string(&path).map_err(|e| format!("Failed to read {}: {e}", path.display()))?;
 
     let config: Config =
         toml::from_str(&content).map_err(|e| format!("Invalid config {}: {e}", path.display()))?;
@@ -71,7 +78,7 @@ pub fn load() -> Result<Config, String> {
     Ok(config)
 }
 
-const PROVIDER_ORDER: &[&str] = &["anthropic", "openai", "google"];
+const PROVIDER_ORDER: &[&str] = &["anthropic", "openai", "google", "ollama"];
 
 impl Config {
     fn get_provider(&self, name: &str) -> Option<&ProviderConfig> {
@@ -79,6 +86,7 @@ impl Config {
             "anthropic" => self.anthropic.as_ref(),
             "openai" => self.openai.as_ref(),
             "google" => self.google.as_ref(),
+            "ollama" => self.ollama.as_ref(),
             _ => None,
         }
     }
