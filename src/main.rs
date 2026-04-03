@@ -217,7 +217,7 @@ fn render(f: &mut Frame, app: &App, provider_label: &str) {
                 Span::styled("$ ", Style::default().fg(Color::Green).bold()),
                 Span::styled(cmd.as_str(), Style::default().fg(Color::White).bold()),
             ]);
-            (Color::Green, line, " ↵ accept · esc cancel ", false)
+            (Color::Green, line, " ↵ accept · e edit · esc cancel ", false)
         }
         Mode::Error(e) => {
             let max = (area.width as usize).saturating_sub(6);
@@ -412,6 +412,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         KeyCode::Enter => {
                             app.accepted = Some(cmd.clone());
                             app.quit = true;
+                        }
+                        KeyCode::Char('e') => {
+                            app.mode = Mode::Input;
+                            app.cursor = app.input.len();
+                            app.history.reset_nav();
                         }
                         KeyCode::Esc => app.quit = true,
                         _ => {}
