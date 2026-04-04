@@ -472,6 +472,7 @@ fn inject_to_terminal(cmd: &str) {
 
 #[cfg(windows)]
 fn inject_to_terminal(cmd: &str) {
+    use std::mem::zeroed;
     use windows_sys::Win32::System::Console::{
         GetStdHandle, WriteConsoleInputW, INPUT_RECORD, KEY_EVENT, KEY_EVENT_RECORD,
         STD_INPUT_HANDLE,
@@ -480,17 +481,17 @@ fn inject_to_terminal(cmd: &str) {
     let handle = unsafe { GetStdHandle(STD_INPUT_HANDLE) };
 
     for ch in cmd.encode_utf16() {
-        let mut key_event = KEY_EVENT_RECORD::default();
-        key_event.bKeyDown = 1;
-        key_event.wRepeatCount = 1;
-        key_event.uChar.UnicodeChar = ch;
-
-        let mut record = INPUT_RECORD::default();
-        record.EventType = KEY_EVENT as u16;
-        record.Event.KeyEvent = key_event;
-
-        let mut written = 0u32;
         unsafe {
+            let mut key_event: KEY_EVENT_RECORD = zeroed();
+            key_event.bKeyDown = 1;
+            key_event.wRepeatCount = 1;
+            key_event.uChar.UnicodeChar = ch;
+
+            let mut record: INPUT_RECORD = zeroed();
+            record.EventType = KEY_EVENT as u16;
+            record.Event.KeyEvent = key_event;
+
+            let mut written = 0u32;
             WriteConsoleInputW(handle, &record, 1, &mut written);
         }
     }
