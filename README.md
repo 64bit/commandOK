@@ -1,14 +1,12 @@
 # ⌘OK
 
+![Demo of commandOK in action](https://raw.githubusercontent.com/64bit/commandOK/refs/heads/main/commandok.gif)
+
+# commandOK
+
 **commandOK** is a Spotlight-like command generator for your terminal. Pops up when you need it and gets out of the way when you don't.
 
-Describe what you want in plain English, get the shell command back instantly.
-
 Built with [Ratatui](https://ratatui.rs) and powered by your choice of LLM provider.
-
-
-![Demo of commandOK in action](commandok.gif)
-
 
 **WARN**: you must always verify the generated command before accepting it
 
