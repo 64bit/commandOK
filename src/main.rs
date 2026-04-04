@@ -110,7 +110,9 @@ impl History {
 }
 
 fn history_path() -> PathBuf {
-    let home = std::env::var("HOME").unwrap_or_else(|_| ".".into());
+    let home = std::env::var("HOME")
+        .or_else(|_| std::env::var("USERPROFILE"))
+        .unwrap_or_else(|_| ".".into());
     PathBuf::from(home).join(".commandok").join("history")
 }
 
@@ -155,9 +157,18 @@ impl App {
 // ---------------------------------------------------------------------------
 
 fn detect_shell() -> String {
-    std::env::var("SHELL")
-        .map(|s| s.rsplit('/').next().unwrap_or(&s).to_string())
-        .unwrap_or_else(|_| "unknown".into())
+    if let Ok(shell) = std::env::var("SHELL") {
+        return shell.rsplit('/').next().unwrap_or(&shell).to_string();
+    }
+    if cfg!(windows) {
+        if std::env::var("PSModulePath").is_ok() {
+            return "powershell".into();
+        }
+        if let Ok(comspec) = std::env::var("COMSPEC") {
+            return comspec.rsplit('\\').next().unwrap_or(&comspec).to_string();
+        }
+    }
+    "unknown".into()
 }
 
 fn detect_os() -> &'static str {
@@ -446,6 +457,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
+#[cfg(unix)]
 fn inject_to_terminal(cmd: &str) {
     use std::os::unix::io::AsRawFd;
 
@@ -454,6 +466,32 @@ fn inject_to_terminal(cmd: &str) {
         let b = byte;
         unsafe {
             libc::ioctl(fd, libc::TIOCSTI, &b as *const u8);
+        }
+    }
+}
+
+#[cfg(windows)]
+fn inject_to_terminal(cmd: &str) {
+    use windows_sys::Win32::System::Console::{
+        GetStdHandle, WriteConsoleInputW, INPUT_RECORD, KEY_EVENT, KEY_EVENT_RECORD,
+        STD_INPUT_HANDLE,
+    };
+
+    let handle = unsafe { GetStdHandle(STD_INPUT_HANDLE) };
+
+    for ch in cmd.encode_utf16() {
+        let mut key_event = KEY_EVENT_RECORD::default();
+        key_event.bKeyDown = 1;
+        key_event.wRepeatCount = 1;
+        key_event.uChar.UnicodeChar = ch;
+
+        let mut record = INPUT_RECORD::default();
+        record.EventType = KEY_EVENT as u16;
+        record.Event.KeyEvent = key_event;
+
+        let mut written = 0u32;
+        unsafe {
+            WriteConsoleInputW(handle, &record, 1, &mut written);
         }
     }
 }
