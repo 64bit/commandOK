@@ -7,17 +7,8 @@ Describe what you want in plain English, get the shell command back instantly.
 Built with [Ratatui](https://ratatui.rs) and powered by your choice of LLM provider.
 
 
-## Demo
+![Demo of commandOK in action](commandok.gif)
 
-```
-╭ ⌘OK · anthropic(claude-opus-4-6) ───────────────────────────────╮
-│ > find all rust files modified in the last 24 hours             │
-╰──────────────── ↵ submit · ⇧Tab switch · esc cancel ────────────╯
-
-╭ ⌘OK · anthropic(claude-opus-4-6) ───────────────────────────────╮
-│ $ find . -name "*.rs" -mtime -1                                 │
-╰──────────────────────────── ↵ accept · esc cancel ──────────────╯
-```
 
 **WARN**: you must always verify the generated command before accepting it
 
