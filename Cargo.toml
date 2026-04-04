@@ -3,6 +3,10 @@ name = "commandok"
 version = "0.1.0"
 edition = "2021"
 description = "Spotlight-like command generator for your terminal, powered by LLMs"
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/64bit/commandOK"
+repository = "https://github.com/64bit/commandOK"
 
 [dependencies]
 ratatui = "0.30"
