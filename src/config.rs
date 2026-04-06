@@ -14,6 +14,7 @@ pub struct Config {
     pub ollama: Option<ProviderConfig>,
     pub openrouter: Option<ProviderConfig>,
     pub xai: Option<ProviderConfig>,
+    pub litert_lm: Option<ProviderConfig>,
 }
 
 #[derive(Deserialize)]
@@ -29,6 +30,8 @@ pub struct ProviderConfig {
     pub model: String,
     #[serde(default)]
     pub api_url: String,
+    #[serde(default)]
+    pub huggingface_repo: String,
 }
 
 fn config_dir() -> PathBuf {
@@ -41,7 +44,7 @@ fn config_path() -> PathBuf {
 }
 
 const DEFAULT_CONFIG: &str = r#"[commandok]
-provider = "anthropic"  # Options: anthropic, openai, google, mistral, ollama, openrouter, xai
+provider = "anthropic"  # Options: anthropic, openai, google, mistral, ollama, openrouter, xai, litert_lm
 system_prompt = "You are a terminal command generator. Given a natural language description, output ONLY the shell command appropriate for the user's OS and shell. No explanation, no markdown, no code blocks, no backticks. Just the raw command."
 
 [anthropic]
@@ -74,6 +77,10 @@ model = "qwen/qwen3.6-plus:free"
 api_key = ""
 model = "grok-4.20-0309-reasoning"
 # api_url = "https://api.x.ai/v1"  # default
+
+[litert_lm]
+model = "gemma-4-E2B-it.litertlm"
+huggingface_repo = "litert-community/gemma-4-E2B-it-litert-lm"
 "#;
 
 pub fn load() -> Result<Config, String> {
@@ -104,6 +111,7 @@ const PROVIDER_ORDER: &[&str] = &[
     "ollama",
     "openrouter",
     "xai",
+    "litert_lm",
 ];
 
 impl Config {
@@ -116,6 +124,7 @@ impl Config {
             "ollama" => self.ollama.as_ref(),
             "openrouter" => self.openrouter.as_ref(),
             "xai" => self.xai.as_ref(),
+            "litert_lm" => self.litert_lm.as_ref(),
             _ => None,
         }
     }
