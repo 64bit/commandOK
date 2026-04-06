@@ -13,19 +13,6 @@ pub async fn stream(
     system_prompt: &str,
     tx: mpsc::UnboundedSender<ApiEvent>,
 ) {
-    if Command::new("litert-lm")
-        .arg("--version")
-        .env("LLVM_PROFILE_FILE", PROFILE_FILE)
-        .output()
-        .await
-        .is_err()
-    {
-        let _ = tx.send(ApiEvent::Error(
-            "litert-lm CLI not found. Install: https://ai.google.dev/edge/litert-lm/cli".into(),
-        ));
-        return;
-    }
-
     let model_id = &cfg.model;
     let repo = &cfg.huggingface_repo;
 
@@ -36,23 +23,46 @@ pub async fn stream(
         return;
     }
 
-    // Download / import the model (idempotent if already present).
-    let import = Command::new("litert-lm")
-        .args(["import", "--from-huggingface-repo", repo, model_id])
+    // Use `litert-lm list` to check CLI availability and whether the model is already imported.
+    let list = Command::new("litert-lm")
+        .arg("list")
         .env("LLVM_PROFILE_FILE", PROFILE_FILE)
         .output()
         .await;
 
-    match import {
-        Ok(o) if o.status.success() => {}
-        Ok(o) => {
-            let msg = String::from_utf8_lossy(&o.stderr);
-            let _ = tx.send(ApiEvent::Error(format!("litert-lm import failed: {msg}")));
+    let needs_import = match list {
+        Ok(o) if o.status.success() => {
+            let stdout = String::from_utf8_lossy(&o.stdout);
+            !stdout.lines().any(|line| line.contains(model_id.as_str()))
+        }
+        Ok(_) => true,
+        Err(_) => {
+            let _ = tx.send(ApiEvent::Error(
+                "litert-lm CLI not found. Install: https://ai.google.dev/edge/litert-lm/cli"
+                    .into(),
+            ));
             return;
         }
-        Err(e) => {
-            let _ = tx.send(ApiEvent::Error(format!("litert-lm import error: {e}")));
-            return;
+    };
+
+    if needs_import {
+        let import = Command::new("litert-lm")
+            .args(["import", "--from-huggingface-repo", repo, model_id])
+            .env("LLVM_PROFILE_FILE", PROFILE_FILE)
+            .output()
+            .await;
+
+        match import {
+            Ok(o) if o.status.success() => {}
+            Ok(o) => {
+                let msg = String::from_utf8_lossy(&o.stderr);
+                let _ = tx.send(ApiEvent::Error(format!("litert-lm import failed: {msg}")));
+                return;
+            }
+            Err(e) => {
+                let _ = tx.send(ApiEvent::Error(format!("litert-lm import error: {e}")));
+                return;
+            }
         }
     }
 
