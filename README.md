@@ -13,6 +13,12 @@ Built with [Ratatui](https://ratatui.rs) and powered by your choice of public, p
 ## Install
 
 ```bash
+brew install 64bit/tap/commandok
+```
+
+OR
+
+```bash
 cargo install commandok
 ```
 
