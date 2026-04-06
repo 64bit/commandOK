@@ -1,5 +1,6 @@
 pub mod claude;
 pub mod gemini;
+pub mod litert_lm;
 pub mod mistral;
 pub mod ollama;
 pub mod openai;
@@ -24,6 +25,7 @@ pub enum Provider {
     Ollama(ProviderConfig),
     OpenRouter(ProviderConfig),
     Xai(ProviderConfig),
+    LitertLm(ProviderConfig),
 }
 
 impl Provider {
@@ -36,6 +38,7 @@ impl Provider {
             "ollama" => Provider::Ollama(cfg.clone()),
             "openrouter" => Provider::OpenRouter(cfg.clone()),
             "xai" => Provider::Xai(cfg.clone()),
+            "litert_lm" => Provider::LitertLm(cfg.clone()),
             _ => unreachable!("validated in config"),
         }
     }
@@ -54,6 +57,7 @@ impl Provider {
             Provider::Ollama(cfg) => ollama::stream(cfg, query, system_prompt, tx).await,
             Provider::OpenRouter(cfg) => openrouter::stream(cfg, query, system_prompt, tx).await,
             Provider::Xai(cfg) => xai::stream(cfg, query, system_prompt, tx).await,
+            Provider::LitertLm(cfg) => litert_lm::stream(cfg, query, system_prompt, tx).await,
         }
     }
 }

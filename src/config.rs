@@ -14,6 +14,7 @@ pub struct Config {
     pub ollama: Option<ProviderConfig>,
     pub openrouter: Option<ProviderConfig>,
     pub xai: Option<ProviderConfig>,
+    pub litert_lm: Option<ProviderConfig>,
 }
 
 #[derive(Deserialize)]
@@ -29,6 +30,8 @@ pub struct ProviderConfig {
     pub model: String,
     #[serde(default)]
     pub api_url: String,
+    #[serde(default)]
+    pub huggingface_repo: String,
 }
 
 fn config_dir() -> PathBuf {
@@ -41,8 +44,14 @@ fn config_path() -> PathBuf {
 }
 
 const DEFAULT_CONFIG: &str = r#"[commandok]
-provider = "anthropic"  # Options: anthropic, openai, google, mistral, ollama, openrouter, xai
-system_prompt = "You are a terminal command generator. Given a natural language description, output ONLY the shell command appropriate for the user's OS and shell. No explanation, no markdown, no code blocks, no backticks. Just the raw command."
+# Options: anthropic, openai, google, mistral, ollama,
+#          openrouter, xai, litert_lm
+provider = "anthropic"
+system_prompt = """\
+You are a terminal command generator. Given a natural language description, output ONLY \
+the shell command appropriate for the user's OS and shell. No explanation, no markdown, no code blocks, \
+no backticks. Just the raw command.\
+"""
 
 [anthropic]
 api_key = ""
@@ -74,6 +83,10 @@ model = "qwen/qwen3.6-plus:free"
 api_key = ""
 model = "grok-4.20-0309-reasoning"
 # api_url = "https://api.x.ai/v1"  # default
+
+[litert_lm]
+model = "gemma-4-E2B-it.litertlm"
+huggingface_repo = "litert-community/gemma-4-E2B-it-litert-lm"
 "#;
 
 pub fn load() -> Result<Config, String> {
@@ -85,6 +98,12 @@ pub fn load() -> Result<Config, String> {
         fs::File::create(&path)
             .and_then(|mut f| f.write_all(DEFAULT_CONFIG.as_bytes()))
             .map_err(|e| format!("Failed to write {}: {e}", path.display()))?;
+    } else if let Some(migrated) = migrate_config(
+        &fs::read_to_string(&path)
+            .map_err(|e| format!("Failed to read {}: {e}", path.display()))?,
+    ) {
+        fs::write(&path, &migrated)
+            .map_err(|e| format!("Failed to update {}: {e}", path.display()))?;
     }
 
     let content =
@@ -96,6 +115,33 @@ pub fn load() -> Result<Config, String> {
     Ok(config)
 }
 
+/// Compares the user's existing config against DEFAULT_CONFIG and returns an
+/// updated string with any missing provider sections appended at the end.
+/// Returns `None` when nothing is missing (no write needed).
+fn migrate_config(existing: &str) -> Option<String> {
+    let existing_table: toml::Table = toml::from_str(existing).ok()?;
+    let default_table: toml::Table = toml::from_str(DEFAULT_CONFIG).ok()?;
+
+    let mut missing = toml::Table::new();
+    for (key, value) in &default_table {
+        if !existing_table.contains_key(key) {
+            missing.insert(key.clone(), value.clone());
+        }
+    }
+
+    if missing.is_empty() {
+        return None;
+    }
+
+    let mut result = existing.to_string();
+    if !result.ends_with('\n') {
+        result.push('\n');
+    }
+    result.push('\n');
+    result.push_str(&toml::to_string_pretty(&missing).ok()?);
+    Some(result)
+}
+
 const PROVIDER_ORDER: &[&str] = &[
     "anthropic",
     "openai",
@@ -104,6 +150,7 @@ const PROVIDER_ORDER: &[&str] = &[
     "ollama",
     "openrouter",
     "xai",
+    "litert_lm",
 ];
 
 impl Config {
@@ -116,6 +163,7 @@ impl Config {
             "ollama" => self.ollama.as_ref(),
             "openrouter" => self.openrouter.as_ref(),
             "xai" => self.xai.as_ref(),
+            "litert_lm" => self.litert_lm.as_ref(),
             _ => None,
         }
     }
