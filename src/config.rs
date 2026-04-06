@@ -44,8 +44,14 @@ fn config_path() -> PathBuf {
 }
 
 const DEFAULT_CONFIG: &str = r#"[commandok]
-provider = "anthropic"  # Options: anthropic, openai, google, mistral, ollama, openrouter, xai, litert_lm
-system_prompt = "You are a terminal command generator. Given a natural language description, output ONLY the shell command appropriate for the user's OS and shell. No explanation, no markdown, no code blocks, no backticks. Just the raw command."
+# Options: anthropic, openai, google, mistral, ollama,
+#          openrouter, xai, litert_lm
+provider = "anthropic"
+system_prompt = """\
+You are a terminal command generator. Given a natural language description, output ONLY \
+the shell command appropriate for the user's OS and shell. No explanation, no markdown, no code blocks, \
+no backticks. Just the raw command.\
+"""
 
 [anthropic]
 api_key = ""
