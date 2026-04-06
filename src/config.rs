@@ -92,6 +92,12 @@ pub fn load() -> Result<Config, String> {
         fs::File::create(&path)
             .and_then(|mut f| f.write_all(DEFAULT_CONFIG.as_bytes()))
             .map_err(|e| format!("Failed to write {}: {e}", path.display()))?;
+    } else if let Some(migrated) = migrate_config(
+        &fs::read_to_string(&path)
+            .map_err(|e| format!("Failed to read {}: {e}", path.display()))?,
+    ) {
+        fs::write(&path, &migrated)
+            .map_err(|e| format!("Failed to update {}: {e}", path.display()))?;
     }
 
     let content =
@@ -101,6 +107,33 @@ pub fn load() -> Result<Config, String> {
         toml::from_str(&content).map_err(|e| format!("Invalid config {}: {e}", path.display()))?;
 
     Ok(config)
+}
+
+/// Compares the user's existing config against DEFAULT_CONFIG and returns an
+/// updated string with any missing provider sections appended at the end.
+/// Returns `None` when nothing is missing (no write needed).
+fn migrate_config(existing: &str) -> Option<String> {
+    let existing_table: toml::Table = toml::from_str(existing).ok()?;
+    let default_table: toml::Table = toml::from_str(DEFAULT_CONFIG).ok()?;
+
+    let mut missing = toml::Table::new();
+    for (key, value) in &default_table {
+        if !existing_table.contains_key(key) {
+            missing.insert(key.clone(), value.clone());
+        }
+    }
+
+    if missing.is_empty() {
+        return None;
+    }
+
+    let mut result = existing.to_string();
+    if !result.ends_with('\n') {
+        result.push('\n');
+    }
+    result.push('\n');
+    result.push_str(&toml::to_string_pretty(&missing).ok()?);
+    Some(result)
 }
 
 const PROVIDER_ORDER: &[&str] = &[
