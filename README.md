@@ -28,23 +28,29 @@ On first run, a default config is created at `~/.commandok/config.toml`. Add you
 
 ```toml
 [commandok]
-provider = "anthropic"  # Options: anthropic, openai, google, mistral, ollama, openrouter, xai
-system_prompt = "You are a terminal command generator. Given a natural language description, output ONLY the shell command appropriate for the user's OS and shell. No explanation, no markdown, no code blocks, no backticks. Just the raw command."
+# Options: anthropic, openai, google, mistral, ollama,
+#          openrouter, xai, litert_lm
+provider = "anthropic"
+system_prompt = """\
+You are a terminal command generator. Given a natural language description, output ONLY \
+the shell command appropriate for the user's OS and shell. No explanation, no markdown, no code blocks, \
+no backticks. Just the raw command.\
+"""
 
 [anthropic]
-api_key = "sk-ant-..."
+api_key = ""
 model = "claude-opus-4-6"
 
 [openai]
-api_key = "sk-..."
+api_key = ""
 model = "gpt-5.4"
 
 [google]
-api_key = "..."
+api_key = ""
 model = "gemini-3-flash-preview"
 
 [mistral]
-api_key = "..."
+api_key = ""
 model = "mistral-small-latest"
 # api_url = "https://api.mistral.ai/v1"  # default
 
@@ -61,6 +67,10 @@ model = "qwen/qwen3.6-plus:free"
 api_key = ""
 model = "grok-4.20-0309-reasoning"
 # api_url = "https://api.x.ai/v1"  # default
+
+[litert_lm]
+model = "gemma-4-E2B-it.litertlm"
+huggingface_repo = "litert-community/gemma-4-E2B-it-litert-lm"
 ```
 
 ## Usage
