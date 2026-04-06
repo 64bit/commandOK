@@ -6,7 +6,7 @@
 
 **commandOK** is a Spotlight-like command generator for your terminal. Pops up when you need it and gets out of the way when you don't.
 
-Built with [Ratatui](https://ratatui.rs) and powered by your choice of LLM provider.
+Built with [Ratatui](https://ratatui.rs) and powered by your choice of public, private or local LLM provider.
 
 **WARN**: you must always verify the generated command before accepting it
 
