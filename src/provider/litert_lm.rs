@@ -13,7 +13,13 @@ pub async fn stream(
     system_prompt: &str,
     tx: mpsc::UnboundedSender<ApiEvent>,
 ) {
-    if Command::new("litert-lm").arg("--version").output().await.is_err() {
+    if Command::new("litert-lm")
+        .arg("--version")
+        .env("LLVM_PROFILE_FILE", PROFILE_FILE)
+        .output()
+        .await
+        .is_err()
+    {
         let _ = tx.send(ApiEvent::Error(
             "litert-lm CLI not found. Install: https://ai.google.dev/edge/litert-lm/cli".into(),
         ));
