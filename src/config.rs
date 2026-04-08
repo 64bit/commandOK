@@ -14,6 +14,7 @@ pub struct Config {
     pub ollama: Option<ProviderConfig>,
     pub openrouter: Option<ProviderConfig>,
     pub xai: Option<ProviderConfig>,
+    pub vercel_ai_gateway: Option<ProviderConfig>,
     pub litert_lm: Option<ProviderConfig>,
 }
 
@@ -45,7 +46,7 @@ fn config_path() -> PathBuf {
 
 const DEFAULT_CONFIG: &str = r#"[commandok]
 # Options: anthropic, openai, google, mistral, ollama,
-#          openrouter, xai, litert_lm
+#          openrouter, xai, vercel_ai_gateway, litert_lm
 provider = "anthropic"
 system_prompt = """\
 You are a terminal command generator. Given a natural language description, output ONLY \
@@ -83,6 +84,11 @@ model = "qwen/qwen3.6-plus:free"
 api_key = ""
 model = "grok-4.20-0309-reasoning"
 # api_url = "https://api.x.ai/v1"  # default
+
+[vercel_ai_gateway]
+api_key = ""
+model = "google/gemini-3-flash"
+# api_url = "https://ai-gateway.vercel.sh/v1"  # default
 
 [litert_lm]
 model = "gemma-4-E2B-it.litertlm"
@@ -150,6 +156,7 @@ const PROVIDER_ORDER: &[&str] = &[
     "ollama",
     "openrouter",
     "xai",
+    "vercel_ai_gateway",
     "litert_lm",
 ];
 
@@ -163,6 +170,7 @@ impl Config {
             "ollama" => self.ollama.as_ref(),
             "openrouter" => self.openrouter.as_ref(),
             "xai" => self.xai.as_ref(),
+            "vercel_ai_gateway" => self.vercel_ai_gateway.as_ref(),
             "litert_lm" => self.litert_lm.as_ref(),
             _ => None,
         }
