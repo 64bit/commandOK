@@ -1,5 +1,5 @@
-use crate::config::ProviderConfig;
 use super::ApiEvent;
+use crate::config::ProviderConfig;
 use tokio::sync::mpsc;
 
 pub async fn stream(
@@ -56,8 +56,7 @@ pub async fn stream(
                     };
 
                     if let Some(text) = json["message"]["content"].as_str() {
-                        if !text.is_empty() && tx.send(ApiEvent::Delta(text.to_string())).is_err()
-                        {
+                        if !text.is_empty() && tx.send(ApiEvent::Delta(text.to_string())).is_err() {
                             return;
                         }
                     }

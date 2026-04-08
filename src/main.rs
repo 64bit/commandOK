@@ -228,7 +228,12 @@ fn render(f: &mut Frame, app: &App, provider_label: &str) {
                 Span::styled("$ ", Style::default().fg(Color::Green).bold()),
                 Span::styled(cmd.as_str(), Style::default().fg(Color::White).bold()),
             ]);
-            (Color::Green, line, " ↵ accept · e edit · esc cancel ", false)
+            (
+                Color::Green,
+                line,
+                " ↵ accept · e edit · esc cancel ",
+                false,
+            )
         }
         Mode::Error(e) => {
             let max = (area.width as usize).saturating_sub(6);
@@ -270,7 +275,7 @@ fn render(f: &mut Frame, app: &App, provider_label: &str) {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let cfg = config::load().map_err(|e| e)?;
+    let cfg = config::load()?;
 
     let available = cfg.available_providers();
     if available.is_empty() {

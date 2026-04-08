@@ -1,5 +1,5 @@
-use crate::config::ProviderConfig;
 use super::ApiEvent;
+use crate::config::ProviderConfig;
 use tokio::sync::mpsc;
 
 pub async fn stream(

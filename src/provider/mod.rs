@@ -60,7 +60,9 @@ impl Provider {
             Provider::Ollama(cfg) => ollama::stream(cfg, query, system_prompt, tx).await,
             Provider::OpenRouter(cfg) => openrouter::stream(cfg, query, system_prompt, tx).await,
             Provider::Xai(cfg) => xai::stream(cfg, query, system_prompt, tx).await,
-            Provider::VercelAiGateway(cfg) => vercel_ai_gateway::stream(cfg, query, system_prompt, tx).await,
+            Provider::VercelAiGateway(cfg) => {
+                vercel_ai_gateway::stream(cfg, query, system_prompt, tx).await
+            }
             Provider::LitertLm(cfg) => litert_lm::stream(cfg, query, system_prompt, tx).await,
         }
     }

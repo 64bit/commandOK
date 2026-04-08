@@ -1,5 +1,5 @@
-use crate::config::ProviderConfig;
 use super::ApiEvent;
+use crate::config::ProviderConfig;
 use std::process::Stdio;
 use tokio::io::{AsyncBufReadExt, BufReader};
 use tokio::process::Command;
@@ -38,8 +38,7 @@ pub async fn stream(
         Ok(_) => true,
         Err(_) => {
             let _ = tx.send(ApiEvent::Error(
-                "litert-lm CLI not found. Install: https://ai.google.dev/edge/litert-lm/cli"
-                    .into(),
+                "litert-lm CLI not found. Install: https://ai.google.dev/edge/litert-lm/cli".into(),
             ));
             return;
         }
