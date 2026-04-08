@@ -29,7 +29,7 @@ On first run, a default config is created at `~/.commandok/config.toml`. Add you
 ```toml
 [commandok]
 # Options: anthropic, openai, google, mistral, ollama,
-#          openrouter, xai, litert_lm
+#          openrouter, xai, vercel_ai_gateway, litert_lm
 provider = "anthropic"
 system_prompt = """\
 You are a terminal command generator. Given a natural language description, output ONLY \
@@ -67,6 +67,11 @@ model = "qwen/qwen3.6-plus:free"
 api_key = ""
 model = "grok-4.20-0309-reasoning"
 # api_url = "https://api.x.ai/v1"  # default
+
+[vercel_ai_gateway]
+api_key = ""
+model = "google/gemini-3-flash"
+# api_url = "https://ai-gateway.vercel.sh/v1"  # default
 
 [litert_lm]
 model = "gemma-4-E2B-it.litertlm"

@@ -5,6 +5,7 @@ pub mod mistral;
 pub mod ollama;
 pub mod openai;
 pub mod openrouter;
+pub mod vercel_ai_gateway;
 pub mod xai;
 
 use crate::config::ProviderConfig;
@@ -25,6 +26,7 @@ pub enum Provider {
     Ollama(ProviderConfig),
     OpenRouter(ProviderConfig),
     Xai(ProviderConfig),
+    VercelAiGateway(ProviderConfig),
     LitertLm(ProviderConfig),
 }
 
@@ -38,6 +40,7 @@ impl Provider {
             "ollama" => Provider::Ollama(cfg.clone()),
             "openrouter" => Provider::OpenRouter(cfg.clone()),
             "xai" => Provider::Xai(cfg.clone()),
+            "vercel_ai_gateway" => Provider::VercelAiGateway(cfg.clone()),
             "litert_lm" => Provider::LitertLm(cfg.clone()),
             _ => unreachable!("validated in config"),
         }
@@ -57,6 +60,7 @@ impl Provider {
             Provider::Ollama(cfg) => ollama::stream(cfg, query, system_prompt, tx).await,
             Provider::OpenRouter(cfg) => openrouter::stream(cfg, query, system_prompt, tx).await,
             Provider::Xai(cfg) => xai::stream(cfg, query, system_prompt, tx).await,
+            Provider::VercelAiGateway(cfg) => vercel_ai_gateway::stream(cfg, query, system_prompt, tx).await,
             Provider::LitertLm(cfg) => litert_lm::stream(cfg, query, system_prompt, tx).await,
         }
     }
