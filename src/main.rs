@@ -150,6 +150,56 @@ impl App {
             history: History::load(),
         }
     }
+
+    fn move_cursor_left(&mut self) {
+        self.cursor = self.cursor.saturating_sub(1);
+    }
+
+    fn move_cursor_right(&mut self) {
+        if self.cursor < self.input.chars().count() {
+            self.cursor += 1;
+        }
+    }
+
+    fn enter_char(&mut self, c: char) {
+        let idx = self.byte_index();
+        self.input.insert(idx, c);
+        self.move_cursor_right();
+    }
+
+    fn byte_index(&self) -> usize {
+        self.input
+            .char_indices()
+            .map(|(i, _)| i)
+            .nth(self.cursor)
+            .unwrap_or(self.input.len())
+    }
+
+    fn cursor_visual_width(&self) -> usize {
+        use unicode_width::UnicodeWidthStr;
+        let byte_idx = self.byte_index();
+        UnicodeWidthStr::width(&self.input[..byte_idx])
+    }
+
+    fn delete_char(&mut self) {
+        if self.cursor != 0 {
+            let current_index = self.cursor;
+            let from_left_to_current_index = current_index - 1;
+            let before_char_to_delete = self.input.chars().take(from_left_to_current_index);
+            let after_char_to_delete = self.input.chars().skip(current_index);
+            self.input = before_char_to_delete.chain(after_char_to_delete).collect();
+            self.move_cursor_left();
+        }
+    }
+
+    fn delete_forward_char(&mut self) {
+        if self.cursor < self.input.chars().count() {
+            let current_index = self.cursor;
+            let before_char_to_delete = self.input.chars().take(current_index);
+            let after_char_to_delete = self.input.chars().skip(current_index + 1);
+            self.input = before_char_to_delete.chain(after_char_to_delete).collect();
+        }
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -197,7 +247,7 @@ fn render(f: &mut Frame, app: &App, provider_label: &str) {
     let (color, content, hint, show_cursor) = match &app.mode {
         Mode::Input => {
             let line = Line::from(vec![
-                Span::styled("> ", Style::default().fg(Color::Cyan).bold()),
+                Span::styled("❱ ", Style::default().fg(Color::Cyan).bold()),
                 Span::raw(&app.input),
             ]);
             (
@@ -264,7 +314,7 @@ fn render(f: &mut Frame, app: &App, provider_label: &str) {
     f.render_widget(Paragraph::new(content).block(block), area);
 
     if show_cursor {
-        let x = area.x + 1 + 2 + app.cursor as u16;
+        let x = area.x + 1 + 2 + app.cursor_visual_width() as u16;
         f.set_cursor_position((x, area.y + 1));
     }
 }
@@ -382,13 +432,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         KeyCode::Up => {
                             if let Some(prev) = app.history.prev(&app.input) {
                                 app.input = prev.to_string();
-                                app.cursor = app.input.len();
+                                app.cursor = app.input.chars().count();
                             }
                         }
                         KeyCode::Down => {
                             if let Some(next) = app.history.next() {
                                 app.input = next.to_string();
-                                app.cursor = app.input.len();
+                                app.cursor = app.input.chars().count();
                             }
                         }
                         KeyCode::Char(c) => {
@@ -398,25 +448,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                     app.cursor = 0;
                                 }
                             } else {
-                                app.input.insert(app.cursor, c);
-                                app.cursor += 1;
+                                app.enter_char(c);
                             }
                         }
                         KeyCode::Backspace => {
-                            if app.cursor > 0 {
-                                app.cursor -= 1;
-                                app.input.remove(app.cursor);
-                            }
+                            app.delete_char();
                         }
-                        KeyCode::Delete if app.cursor < app.input.len() => {
-                            app.input.remove(app.cursor);
+                        KeyCode::Delete => {
+                            app.delete_forward_char();
                         }
-                        KeyCode::Left => app.cursor = app.cursor.saturating_sub(1),
-                        KeyCode::Right if app.cursor < app.input.len() => {
-                            app.cursor += 1;
-                        }
+                        KeyCode::Left => app.move_cursor_left(),
+                        KeyCode::Right => app.move_cursor_right(),
                         KeyCode::Home => app.cursor = 0,
-                        KeyCode::End => app.cursor = app.input.len(),
+                        KeyCode::End => app.cursor = app.input.chars().count(),
                         _ => {}
                     },
                     Mode::Loading | Mode::Streaming(_) => {
@@ -431,7 +475,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         }
                         KeyCode::Char('e') => {
                             app.mode = Mode::Input;
-                            app.cursor = app.input.len();
+                            app.cursor = app.input.chars().count();
                             app.history.reset_nav();
                         }
                         KeyCode::Esc => app.quit = true,
