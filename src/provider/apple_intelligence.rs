@@ -7,7 +7,7 @@
 
 use super::ApiEvent;
 use crate::config::ProviderConfig;
-use std::ffi::{CStr, CString, c_char, c_void};
+use std::ffi::{c_char, c_void, CStr, CString};
 use tokio::sync::mpsc;
 
 unsafe extern "C" {
@@ -27,7 +27,9 @@ extern "C" fn on_delta(user_data: *mut c_void, text: *const c_char) {
         return;
     }
     let tx = unsafe { &*(user_data as *const mpsc::UnboundedSender<ApiEvent>) };
-    let s = unsafe { CStr::from_ptr(text) }.to_string_lossy().into_owned();
+    let s = unsafe { CStr::from_ptr(text) }
+        .to_string_lossy()
+        .into_owned();
     let _ = tx.send(ApiEvent::Delta(s));
 }
 
@@ -42,7 +44,9 @@ extern "C" fn on_done(user_data: *mut c_void, status: i32, err: *const c_char) {
         let msg = if err.is_null() {
             "Apple Intelligence stream failed".to_string()
         } else {
-            unsafe { CStr::from_ptr(err) }.to_string_lossy().into_owned()
+            unsafe { CStr::from_ptr(err) }
+                .to_string_lossy()
+                .into_owned()
         };
         let _ = tx.send(ApiEvent::Error(msg));
     }
