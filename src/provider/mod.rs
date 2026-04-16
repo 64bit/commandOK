@@ -1,3 +1,9 @@
+#[cfg(all(
+    feature = "apple-intelligence",
+    target_os = "macos",
+    target_arch = "aarch64"
+))]
+pub mod apple_intelligence;
 pub mod claude;
 pub mod gemini;
 pub mod litert_lm;
@@ -28,6 +34,12 @@ pub enum Provider {
     Xai(ProviderConfig),
     VercelAiGateway(ProviderConfig),
     LitertLm(ProviderConfig),
+    #[cfg(all(
+        feature = "apple-intelligence",
+        target_os = "macos",
+        target_arch = "aarch64"
+    ))]
+    AppleIntelligence(ProviderConfig),
 }
 
 impl Provider {
@@ -42,6 +54,12 @@ impl Provider {
             "xai" => Provider::Xai(cfg.clone()),
             "vercel_ai_gateway" => Provider::VercelAiGateway(cfg.clone()),
             "litert_lm" => Provider::LitertLm(cfg.clone()),
+            #[cfg(all(
+                feature = "apple-intelligence",
+                target_os = "macos",
+                target_arch = "aarch64"
+            ))]
+            "apple_intelligence" => Provider::AppleIntelligence(cfg.clone()),
             _ => unreachable!("validated in config"),
         }
     }
@@ -64,6 +82,14 @@ impl Provider {
                 vercel_ai_gateway::stream(cfg, query, system_prompt, tx).await
             }
             Provider::LitertLm(cfg) => litert_lm::stream(cfg, query, system_prompt, tx).await,
+            #[cfg(all(
+                feature = "apple-intelligence",
+                target_os = "macos",
+                target_arch = "aarch64"
+            ))]
+            Provider::AppleIntelligence(cfg) => {
+                apple_intelligence::stream(cfg, query, system_prompt, tx).await
+            }
         }
     }
 }

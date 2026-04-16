@@ -16,6 +16,12 @@ pub struct Config {
     pub xai: Option<ProviderConfig>,
     pub vercel_ai_gateway: Option<ProviderConfig>,
     pub litert_lm: Option<ProviderConfig>,
+    #[cfg(all(
+        feature = "apple-intelligence",
+        target_os = "macos",
+        target_arch = "aarch64"
+    ))]
+    pub apple_intelligence: Option<ProviderConfig>,
 }
 
 #[derive(Deserialize)]
@@ -46,7 +52,8 @@ fn config_path() -> PathBuf {
 
 const DEFAULT_CONFIG: &str = r#"[commandok]
 # Options: anthropic, openai, google, mistral, ollama,
-#          openrouter, xai, vercel_ai_gateway, litert_lm
+#          openrouter, xai, vercel_ai_gateway, litert_lm,
+#          apple_intelligence (requires building with --features apple-intelligence on macOS 26+ ARM)
 provider = "anthropic"
 system_prompt = """\
 You are a terminal command generator. Given a natural language description, output ONLY \
@@ -93,6 +100,12 @@ model = "google/gemini-3-flash"
 [litert_lm]
 model = "gemma-4-E2B-it.litertlm"
 huggingface_repo = "litert-community/gemma-4-E2B-it-litert-lm"
+
+# On-device Apple Intelligence (FoundationModels framework).
+# Only used when commandok was built with: cargo install commandok --features apple-intelligence
+# Requires macOS 26+ on Apple Silicon and Apple Intelligence enabled in System Settings.
+[apple_intelligence]
+model = "system"
 "#;
 
 pub fn load() -> Result<Config, String> {
@@ -158,6 +171,12 @@ const PROVIDER_ORDER: &[&str] = &[
     "xai",
     "vercel_ai_gateway",
     "litert_lm",
+    #[cfg(all(
+        feature = "apple-intelligence",
+        target_os = "macos",
+        target_arch = "aarch64"
+    ))]
+    "apple_intelligence",
 ];
 
 impl Config {
@@ -172,6 +191,12 @@ impl Config {
             "xai" => self.xai.as_ref(),
             "vercel_ai_gateway" => self.vercel_ai_gateway.as_ref(),
             "litert_lm" => self.litert_lm.as_ref(),
+            #[cfg(all(
+                feature = "apple-intelligence",
+                target_os = "macos",
+                target_arch = "aarch64"
+            ))]
+            "apple_intelligence" => self.apple_intelligence.as_ref(),
             _ => None,
         }
     }

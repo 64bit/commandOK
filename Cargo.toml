@@ -8,6 +8,12 @@ readme = "README.md"
 homepage = "https://github.com/64bit/commandOK"
 repository = "https://github.com/64bit/commandOK"
 
+[features]
+default = []
+# On-device Apple Intelligence via the FoundationModels framework.
+# Requires macOS 26+ on Apple Silicon and the Swift toolchain (xcrun/swiftc) at build time.
+apple-intelligence = []
+
 [dependencies]
 ratatui = "0.30"
 unicode-width = "0.2.2"
