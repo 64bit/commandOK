@@ -29,7 +29,8 @@ On first run, a default config is created at `~/.commandok/config.toml`. Add you
 ```toml
 [commandok]
 # Options: anthropic, openai, google, mistral, ollama,
-#          openrouter, xai, vercel_ai_gateway, litert_lm
+#          openrouter, xai, vercel_ai_gateway, litert_lm,
+#          apple_intelligence (requires building with --features apple-intelligence on macOS 26+ ARM)
 provider = "anthropic"
 system_prompt = """\
 You are a terminal command generator. Given a natural language description, output ONLY \
@@ -76,7 +77,20 @@ model = "google/gemini-3-flash"
 [litert_lm]
 model = "gemma-4-E2B-it.litertlm"
 huggingface_repo = "litert-community/gemma-4-E2B-it-litert-lm"
+
+[apple_intelligence]
+model = "system"
 ```
+
+## Apple Intelligence (optional)
+
+On macOS 26+ on Apple Silicon, commandOK can run prompts entirely on-device through Apple's FoundationModels framework. It is gated behind a Cargo feature so the default install does not require the Swift toolchain.
+
+```bash
+cargo install commandok --features apple-intelligence
+```
+
+Building the feature requires the Xcode Command Line Tools (`xcode-select --install`). At runtime, Apple Intelligence must be enabled in System Settings.
 
 ## Usage
 
