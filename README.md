@@ -78,6 +78,10 @@ model = "google/gemini-3-flash"
 model = "gemma-4-E2B-it.litertlm"
 huggingface_repo = "litert-community/gemma-4-E2B-it-litert-lm"
 
+[lmstudio]
+model = "qwen/qwen3-coder-next"
+# api_url = "http://localhost:1234"  # default, change if running elsewhere
+
 [apple_intelligence]
 model = "system"
 ```
