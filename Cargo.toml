@@ -1,6 +1,6 @@
 [package]
 name = "commandok"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2021"
 description = "Spotlight-like command generator for your terminal, powered by LLMs"
 license = "MIT"
