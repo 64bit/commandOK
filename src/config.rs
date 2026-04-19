@@ -10,6 +10,7 @@ pub struct Config {
     pub anthropic: Option<ProviderConfig>,
     pub openai: Option<ProviderConfig>,
     pub google: Option<ProviderConfig>,
+    pub lmstudio: Option<ProviderConfig>,
     pub mistral: Option<ProviderConfig>,
     pub ollama: Option<ProviderConfig>,
     pub openrouter: Option<ProviderConfig>,
@@ -101,6 +102,10 @@ model = "google/gemini-3-flash"
 model = "gemma-4-E2B-it.litertlm"
 huggingface_repo = "litert-community/gemma-4-E2B-it-litert-lm"
 
+[lmstudio]
+model = "qwen/qwen3-coder-next"
+# api_url = "http://localhost:1234"  # default, change if running elsewhere
+
 # On-device Apple Intelligence (FoundationModels framework).
 # Only used when commandok was built with: cargo install commandok --features apple-intelligence
 # Requires macOS 26+ on Apple Silicon and Apple Intelligence enabled in System Settings.
@@ -165,6 +170,7 @@ const PROVIDER_ORDER: &[&str] = &[
     "anthropic",
     "openai",
     "google",
+    "lmstudio",
     "mistral",
     "ollama",
     "openrouter",
@@ -185,6 +191,7 @@ impl Config {
             "anthropic" => self.anthropic.as_ref(),
             "openai" => self.openai.as_ref(),
             "google" => self.google.as_ref(),
+            "lmstudio" => self.lmstudio.as_ref(),
             "mistral" => self.mistral.as_ref(),
             "ollama" => self.ollama.as_ref(),
             "openrouter" => self.openrouter.as_ref(),
