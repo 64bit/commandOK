@@ -85,7 +85,7 @@ model = "gemma3:1b"
 # api_url = "http://localhost:11434"  # default, change if running elsewhere
 
 [llamacpp]
-model = ""
+model = "default"
 # api_url = "http://localhost:8080"  # default, change if running elsewhere
 
 [openrouter]
