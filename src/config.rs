@@ -10,6 +10,7 @@ pub struct Config {
     pub anthropic: Option<ProviderConfig>,
     pub openai: Option<ProviderConfig>,
     pub google: Option<ProviderConfig>,
+    pub llamacpp: Option<ProviderConfig>,
     pub lmstudio: Option<ProviderConfig>,
     pub mistral: Option<ProviderConfig>,
     pub ollama: Option<ProviderConfig>,
@@ -52,7 +53,7 @@ fn config_path() -> PathBuf {
 }
 
 const DEFAULT_CONFIG: &str = r#"[commandok]
-# Options: anthropic, openai, google, mistral, ollama,
+# Options: anthropic, openai, google, mistral, ollama, llamacpp,
 #          openrouter, xai, vercel_ai_gateway, litert_lm,
 #          apple_intelligence (requires building with --features apple-intelligence on macOS 26+ ARM)
 provider = "anthropic"
@@ -82,6 +83,10 @@ model = "mistral-small-latest"
 [ollama]
 model = "gemma3:1b"
 # api_url = "http://localhost:11434"  # default, change if running elsewhere
+
+[llamacpp]
+model = ""
+# api_url = "http://localhost:8080"  # default, change if running elsewhere
 
 [openrouter]
 api_key = ""
@@ -170,6 +175,7 @@ const PROVIDER_ORDER: &[&str] = &[
     "anthropic",
     "openai",
     "google",
+    "llamacpp",
     "lmstudio",
     "mistral",
     "ollama",
@@ -191,6 +197,7 @@ impl Config {
             "anthropic" => self.anthropic.as_ref(),
             "openai" => self.openai.as_ref(),
             "google" => self.google.as_ref(),
+            "llamacpp" => self.llamacpp.as_ref(),
             "lmstudio" => self.lmstudio.as_ref(),
             "mistral" => self.mistral.as_ref(),
             "ollama" => self.ollama.as_ref(),
