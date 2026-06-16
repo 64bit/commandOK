@@ -7,6 +7,7 @@ pub mod apple_intelligence;
 pub mod claude;
 pub mod gemini;
 pub mod litert_lm;
+pub mod llamacpp;
 pub mod lmstudio;
 pub mod mistral;
 pub mod ollama;
@@ -29,6 +30,7 @@ pub enum Provider {
     Anthropic(ProviderConfig),
     OpenAi(ProviderConfig),
     Google(ProviderConfig),
+    LlamaCpp(ProviderConfig),
     LMStudio(ProviderConfig),
     Mistral(ProviderConfig),
     Ollama(ProviderConfig),
@@ -50,6 +52,7 @@ impl Provider {
             "anthropic" => Provider::Anthropic(cfg.clone()),
             "openai" => Provider::OpenAi(cfg.clone()),
             "google" => Provider::Google(cfg.clone()),
+            "llamacpp" => Provider::LlamaCpp(cfg.clone()),
             "lmstudio" => Provider::LMStudio(cfg.clone()),
             "mistral" => Provider::Mistral(cfg.clone()),
             "ollama" => Provider::Ollama(cfg.clone()),
@@ -77,6 +80,7 @@ impl Provider {
             Provider::Anthropic(cfg) => claude::stream(cfg, query, system_prompt, tx).await,
             Provider::OpenAi(cfg) => openai::stream(cfg, query, system_prompt, tx).await,
             Provider::Google(cfg) => gemini::stream(cfg, query, system_prompt, tx).await,
+            Provider::LlamaCpp(cfg) => llamacpp::stream(cfg, query, system_prompt, tx).await,
             Provider::LMStudio(cfg) => lmstudio::stream(cfg, query, system_prompt, tx).await,
             Provider::Mistral(cfg) => mistral::stream(cfg, query, system_prompt, tx).await,
             Provider::Ollama(cfg) => ollama::stream(cfg, query, system_prompt, tx).await,

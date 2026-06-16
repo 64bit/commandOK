@@ -28,7 +28,7 @@ On first run, a default config is created at `~/.commandok/config.toml`. Add you
 
 ```toml
 [commandok]
-# Options: anthropic, openai, google, mistral, ollama,
+# Options: anthropic, openai, google, mistral, ollama, llamacpp,
 #          openrouter, xai, vercel_ai_gateway, litert_lm,
 #          apple_intelligence (requires building with --features apple-intelligence on macOS 26+ ARM)
 provider = "anthropic"
@@ -58,6 +58,10 @@ model = "mistral-small-latest"
 [ollama]
 model = "gemma3:1b"
 # api_url = "http://localhost:11434"  # default, change if running elsewhere
+
+[llamacpp]
+model = "default"
+# api_url = "http://localhost:8080"  # default, change if running elsewhere
 
 [openrouter]
 api_key = ""
